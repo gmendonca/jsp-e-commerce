@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
 	<head>
 		<title>Best Deal</title>
@@ -42,10 +43,12 @@
 		</section>
 		<nav>
 			<ul>
-				<li><a href="#" class="stylish">Phones</a></li>
-				<li><a href="#" class="stylish">Tablets</a></li>
-				<li><a href="#" class="stylish">Laptop</a></li>
-				<li><a href="#" class="stylish">TV</a></li>
+				<form action="catalog.jsp">
+				<li><input type="submit" name="product" value="Phones"></li>
+				<li><input type="submit" name="product" value="Tablets"></li>
+				<li><input type="submit" name="product" value="Laptop"></li>
+				<li><input type="submit" name="product" value="TV"></li>
+				</form>
 			</ul>
 		</nav>
 
