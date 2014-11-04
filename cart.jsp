@@ -3,13 +3,22 @@
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="beans.Cart" %>
+<%@ page import="beans.User" %>
 
 <%
     Cart c = new Cart();
     if(session.getAttribute("cart") != null) c = (Cart)session.getAttribute("cart");
-    String newProduct = request.getParameter("product");
-    c.setProduct(newProduct);
-    session.setAttribute("cart", c);
+    String product;
+    if(request.getParameter("product") != null) {
+        product = request.getParameter("product");
+        c.setProduct(product);
+        session.setAttribute("cart", c);
+    }
+    if(request.getParameter("remove") != null) {
+        product = request.getParameter("remove");
+        c.removeProduct(product);
+        session.setAttribute("cart", c);
+    }
 %>
 
 <html>
@@ -22,10 +31,10 @@
             <table width="100%">
                 <tr>
                     <td width="75%">
-                        <h1><a href="/ecom/HomePage">Best Deal</a></h1>
+                        <h1><a href="index.jsp">Best Deal</a></h1>
                     </td>
                     <td width="25%">
-                        <a href="/ecom/CartPage"><img src="img/cart.jpg" alt="cart" width="80" height="80"/></a>
+                        <a href="cart.jsp"><img src="img/cart.jpg" alt="cart" width="80" height="80"/></a>
                     </td>
                 </tr>
             </table>
@@ -35,7 +44,7 @@
                 <tr height="40px">
                     <td width="40%">
                         <ul>
-                            <li><a href="#" class="stylish">Home</a></li>
+                            <li><a href="index.jsp" class="stylish">Home</a></li>
                             <li><a href="#" class="stylish">Weekly Deals</a></li>
                             <li><a href="#" class="stylish">Contact</a></li>
                             <li><a href="#" class="stylish">About us</a></li>
@@ -46,9 +55,22 @@
                         <a href="#" class="stylish">Search it</a>
                     </td>
                     <td width="30%">
-                        <a href="/ecom/SignInPage" class="normal">Sign In</a>
+                        <%
+                        User u;
+                        if(session.getAttribute("user") != null) {
+                            u = (User)session.getAttribute("user");
+                        %>
+                        <a href="info.jsp" class="normal">Hi, <%= u.getUserID() %></a>
+                        <%
+                            }else {
+                        %>
+
+                        <a href="signin.jsp" class="normal">Sign In</a>
                         <span> or </span>
-                        <a href="/ecom/SignInPage" class="normal">Create an Account</a>
+                        <a href="signin.jsp" class="normal">Create an Account</a>
+                        <%
+                            }
+                        %>
                     </td>
                 </tr>
             </table>
@@ -66,10 +88,33 @@
 
         <aside>
             <h1 align="center">Cart</h1>
+            <form action="cart.jsp">
             <%
-                for(String p : c.getProducts()){
+                if(c.getProducts().isEmpty()){
             %>
-            <p><%= p %></p>
+                <p> Your Cart is Empty! </p>
+                </form>
+            <%
+                } else {
+
+                Set set = c.getProducts().entrySet();
+                Iterator i = set.iterator();
+                String prod;
+                Integer count;
+                while(i.hasNext()) {
+                   Map.Entry me = (Map.Entry)i.next();
+                   prod = (String)me.getKey();
+                   count = (Integer)me.getValue();
+            %>
+                    <p>Remove: <input type="submit" name="remove" value="<%= prod %>"><br>
+                        Quantity: <%= count %></p>
+            <%
+                    }
+            %>
+            </form>
+            <form action="checkout.jsp">
+                <input type="submit" value="Checkout">
+            </form>
             <%
                 }
             %>

@@ -6,7 +6,7 @@
 
 <html>
 	<head>
-		<title>Best Deal</title>
+		<title>Sign in</title>
 		<link rel="stylesheet" type="text/css" href="css/styles.css">
 	</head>
 	<body>
@@ -38,29 +38,9 @@
 						<a href="#" class="stylish">Search it</a>
 					</td>
 					<td width="30%">
-						<%
-							String name = "User";
-							User u;
-							if(request.getParameter("username") != null){
-								name = request.getParameter("username");
-								u = new User(name);
-								session.setAttribute("user", u);
-							}
-
-							if(session.getAttribute("user") != null) {
-								u = (User)session.getAttribute("user");
-						%>
-						<a href="info.jsp" class="normal">Hi, <%= u.getUserID() %></a>
-						<%
-							}else {
-						%>
-
 						<a href="signin.jsp" class="normal">Sign In</a>
 						<span> or </span>
 						<a href="signin.jsp" class="normal">Create an Account</a>
-						<%
-							}
-						%>
 					</td>
 				</tr>
 			</table>
@@ -77,7 +57,11 @@
 		</nav>
 
 		<aside>
-			<h1 align="center">Deals</h1>
+			<h1 align="center">Sign in or Create an User</h1>
+			<form action="index.jsp">
+    		Username: <input type="text" name="username"><br>
+    		<input id="buybutton" type="submit" VALUE="OK">
+   			</form>
 		</aside>
 	</body>
 <html>

@@ -1,46 +1,33 @@
 <!DOCTYPE html>
 <%@ page import="java.util.*"%>
+<%@ page import="java.text.*"%>
+<%@ page import="javax.servlet.*"%>
+<%@ page import="javax.servlet.http.*"%>
+<%@ page import="beans.Cart" %>
+<%@ page import="beans.Order" %>
 <%@ page import="beans.User" %>
-
 <%
-    Map<String, String> catalogList = new HashMap<String, String>();
-    catalogList.put("Droid MAXX", "Phones");
-    catalogList.put("Moto X", "Phones");
-    catalogList.put("iPhone 5S", "Phones");
-    catalogList.put("iPhone 5C", "Phones");
-    catalogList.put("Galaxy S3", "Phones");
-    catalogList.put("Galaxy S4", "Phones");
-
-    catalogList.put("Kindle", "Tablets");
-    catalogList.put("Nexus", "Tablets");
-    catalogList.put("Surface", "Tablets");
-    catalogList.put("Galaxy", "Tablets");
-    catalogList.put("iPad", "Tablets");
-
-    catalogList.put("MacBook", "Laptop");
-    catalogList.put("Asus", "Laptop");
-    catalogList.put("Sony", "Laptop");
-    catalogList.put("Lenovo", "Laptop");
-
-    catalogList.put("Panasonic", "TV");
-    catalogList.put("Samsung", "TV");
-    catalogList.put("Sony", "TV");
-
-    request.setAttribute("catalogList", catalogList);
-
-    String title = request.getParameter("product");
+    Cart c = new Cart();
+    if(session.getAttribute("cart") != null) c = (Cart)session.getAttribute("cart");
+    Order o = new Order();
+    o.setFirst(request.getParameter("firstname"));
+    o.setLast(request.getParameter("lastname"));
+    o.setAddress(request.getParameter("address1") + " - " +request.getParameter("address2") + ", " + request.getParameter("city") + " - " + request.getParameter("state") + ", " + request.getParameter("country") + ", " + request.getParameter("zipcode"));
+    o.setCard(request.getParameter("creditcard"));
+    o.setName(request.getParameter("nameprinted"));
+    o.setDate(request.getParameter("expiration"));
+    o.setCvc(request.getParameter("cvc"));
+    o.setProducts(c.getProducts());
+    User u = new User("Guest");
+    if(session.getAttribute("user") != null) u = (User)session.getAttribute("user");
+    u.setOrder(o);
+    session.setAttribute("user", u);
 
 %>
 
-<jsp:useBean id="entry" class="beans.StringBean" />
-<jsp:setProperty
-    name="entry"
-    property="product"
-    value='<%= request.getParameter("product") %>'/>
-
 <html>
     <head>
-        <title><jsp:getProperty name="entry" property="product" /></title>
+        <title>Confirmation Page</title>
         <link rel="stylesheet" type="text/css" href="css/styles.css">
     </head>
     <body>
@@ -73,9 +60,7 @@
                     </td>
                     <td width="30%">
                         <%
-                        User u;
                         if(session.getAttribute("user") != null) {
-                            u = (User)session.getAttribute("user");
                         %>
                         <a href="info.jsp" class="normal">Hi, <%= u.getUserID() %></a>
                         <%
@@ -104,24 +89,42 @@
         </nav>
 
         <aside>
-            <h1 align="center">Deals</h1>
-            <form action="cart.jsp">
+            <% Date date = new Date(); %>
+            <h1 align="center">Confirmation Page</h1>
+            <h3><%= u.getUserID() %>, thank you for you purchase on <%= date %>!</h3>
             <%
-                Set set = catalogList.entrySet();
+                String orderstring = o.toString();
+            %>
+            <p><%= orderstring %>
+            <%
+                Set set = c.getProducts().entrySet();
                 Iterator i = set.iterator();
                 String prod;
+                Integer count;
                 while(i.hasNext()) {
                    Map.Entry me = (Map.Entry)i.next();
-                   String comp = (String)me.getValue();
-                   if(title.compareTo(comp) == 0){
-                       prod = (String)me.getKey();
+                   prod = (String)me.getKey();
+                   count = (Integer)me.getValue();
             %>
-                    <p>Buy: <input type="submit" name="product" value="<%= prod %>"></p>
+                    <br>* <%= prod %> - <%= count %>
             <%
                     }
-                }
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DAY_OF_MONTH, 14);
+                date = calendar.getTime();
+
+                SimpleDateFormat s = new SimpleDateFormat("MM/dd/yy");
             %>
+                    <br><br>Delivery Date: <%= s.format(date) %>
+            </p>
+            <form action="index.jsp">
+                <input type="submit" value="OK">
             </form>
+            <% 
+                c = new Cart();
+                session.setAttribute("cart", c); 
+            %>
         </aside>
     </body>
 <html>

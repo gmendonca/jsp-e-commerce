@@ -1,46 +1,19 @@
 <!DOCTYPE html>
 <%@ page import="java.util.*"%>
+<%@ page import="javax.servlet.*"%>
+<%@ page import="javax.servlet.http.*"%>
+<%@ page import="beans.Cart" %>
 <%@ page import="beans.User" %>
 
 <%
-    Map<String, String> catalogList = new HashMap<String, String>();
-    catalogList.put("Droid MAXX", "Phones");
-    catalogList.put("Moto X", "Phones");
-    catalogList.put("iPhone 5S", "Phones");
-    catalogList.put("iPhone 5C", "Phones");
-    catalogList.put("Galaxy S3", "Phones");
-    catalogList.put("Galaxy S4", "Phones");
-
-    catalogList.put("Kindle", "Tablets");
-    catalogList.put("Nexus", "Tablets");
-    catalogList.put("Surface", "Tablets");
-    catalogList.put("Galaxy", "Tablets");
-    catalogList.put("iPad", "Tablets");
-
-    catalogList.put("MacBook", "Laptop");
-    catalogList.put("Asus", "Laptop");
-    catalogList.put("Sony", "Laptop");
-    catalogList.put("Lenovo", "Laptop");
-
-    catalogList.put("Panasonic", "TV");
-    catalogList.put("Samsung", "TV");
-    catalogList.put("Sony", "TV");
-
-    request.setAttribute("catalogList", catalogList);
-
-    String title = request.getParameter("product");
-
+    Cart c = new Cart();
+    if(session.getAttribute("cart") != null) c = (Cart)session.getAttribute("cart");
+    
 %>
-
-<jsp:useBean id="entry" class="beans.StringBean" />
-<jsp:setProperty
-    name="entry"
-    property="product"
-    value='<%= request.getParameter("product") %>'/>
 
 <html>
     <head>
-        <title><jsp:getProperty name="entry" property="product" /></title>
+        <title>Checkout</title>
         <link rel="stylesheet" type="text/css" href="css/styles.css">
     </head>
     <body>
@@ -104,23 +77,24 @@
         </nav>
 
         <aside>
-            <h1 align="center">Deals</h1>
-            <form action="cart.jsp">
-            <%
-                Set set = catalogList.entrySet();
-                Iterator i = set.iterator();
-                String prod;
-                while(i.hasNext()) {
-                   Map.Entry me = (Map.Entry)i.next();
-                   String comp = (String)me.getValue();
-                   if(title.compareTo(comp) == 0){
-                       prod = (String)me.getKey();
-            %>
-                    <p>Buy: <input type="submit" name="product" value="<%= prod %>"></p>
-            <%
-                    }
-                }
-            %>
+            <form action="order.jsp">
+                <h1 align="center">Checkout</h1>
+                First name: <input type="text" name="firstname"><br>
+                Last name: <input type="text" name="lastname"><br>
+
+                Address Line 1: <input type="text" name="address1"><br>
+                Address Line 2: <input type="text" name="address2"><br>
+                City: <input type="text" name="city"><br>
+                State: <input type="text" name="state"><br>
+                Zip Code: <input type="text" name="zipcode"><br>
+                Country: <input type="text" name="country"><br>
+
+                Credit Card: <input type="text" name="creditcard"><br>
+                Name Printed: <input type="text" name="nameprinted"><br>
+                Expiration Date: <input type="text" name="expiration"><br>
+                CVC: <input type="text" name="cvc"><br>
+                <br>
+                <input type="submit" value="Confirm">
             </form>
         </aside>
     </body>

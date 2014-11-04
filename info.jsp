@@ -1,46 +1,25 @@
 <!DOCTYPE html>
 <%@ page import="java.util.*"%>
+<%@ page import="javax.servlet.*"%>
+<%@ page import="javax.servlet.http.*"%>
 <%@ page import="beans.User" %>
+<%@ page import="beans.Order" %>
 
 <%
-    Map<String, String> catalogList = new HashMap<String, String>();
-    catalogList.put("Droid MAXX", "Phones");
-    catalogList.put("Moto X", "Phones");
-    catalogList.put("iPhone 5S", "Phones");
-    catalogList.put("iPhone 5C", "Phones");
-    catalogList.put("Galaxy S3", "Phones");
-    catalogList.put("Galaxy S4", "Phones");
+    User u = new User("Teste");
+    if(session.getAttribute("user") != null) u = (User)session.getAttribute("user");
 
-    catalogList.put("Kindle", "Tablets");
-    catalogList.put("Nexus", "Tablets");
-    catalogList.put("Surface", "Tablets");
-    catalogList.put("Galaxy", "Tablets");
-    catalogList.put("iPad", "Tablets");
-
-    catalogList.put("MacBook", "Laptop");
-    catalogList.put("Asus", "Laptop");
-    catalogList.put("Sony", "Laptop");
-    catalogList.put("Lenovo", "Laptop");
-
-    catalogList.put("Panasonic", "TV");
-    catalogList.put("Samsung", "TV");
-    catalogList.put("Sony", "TV");
-
-    request.setAttribute("catalogList", catalogList);
-
-    String title = request.getParameter("product");
-
+    String order;
+    if(request.getParameter("remove") != null) {
+        order = request.getParameter("remove");
+        u.removeOrder(order);
+        session.setAttribute("user", u);
+    }
 %>
-
-<jsp:useBean id="entry" class="beans.StringBean" />
-<jsp:setProperty
-    name="entry"
-    property="product"
-    value='<%= request.getParameter("product") %>'/>
 
 <html>
     <head>
-        <title><jsp:getProperty name="entry" property="product" /></title>
+        <title>Info Page</title>
         <link rel="stylesheet" type="text/css" href="css/styles.css">
     </head>
     <body>
@@ -73,9 +52,7 @@
                     </td>
                     <td width="30%">
                         <%
-                        User u;
                         if(session.getAttribute("user") != null) {
-                            u = (User)session.getAttribute("user");
                         %>
                         <a href="info.jsp" class="normal">Hi, <%= u.getUserID() %></a>
                         <%
@@ -104,24 +81,29 @@
         </nav>
 
         <aside>
-            <h1 align="center">Deals</h1>
-            <form action="cart.jsp">
+            <h1 align="center">Your Orders</h1>
             <%
-                Set set = catalogList.entrySet();
-                Iterator i = set.iterator();
-                String prod;
-                while(i.hasNext()) {
-                   Map.Entry me = (Map.Entry)i.next();
-                   String comp = (String)me.getValue();
-                   if(title.compareTo(comp) == 0){
-                       prod = (String)me.getKey();
+                ArrayList<Order> orders = u.getOrders();
+                if(orders.isEmpty()){
             %>
-                    <p>Buy: <input type="submit" name="product" value="<%= prod %>"></p>
+            <p> No orders made yet! </p>
             <%
-                    }
+                } else {
+            %>
+            <form action="info.jsp">
+            <%
+                for(Order o : orders){
+            %>
+                <p><%= o.showOrder() %><br>Remove: <input type="submit" name="remove" value="<%= o.getConf() %>"></p>
+                <br>
+                <br>
+            <%
                 }
             %>
             </form>
+            <%
+              }
+            %>
         </aside>
     </body>
 <html>
